@@ -10,7 +10,7 @@ const fakeUsers = [
   },
   {
     id: 2,
-    username: 'binod',
+    username: 'sudeep1',
     password: 'password123',
   },
 ];

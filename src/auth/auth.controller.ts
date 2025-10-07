@@ -1,17 +1,25 @@
-import { Body, Controller, HttpException, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthPayloadDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
+import { LocalGuard } from './guards/local.guard';
+import type { Request } from 'express';
+import { JwtAuthGuard } from './guards/jwt.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
-  login(@Body() authPayload: AuthPayloadDto) {
-    const user = this.authService.validateUser(authPayload);
+  @UseGuards(LocalGuard)
+  login(@Req() req: Request) {
+    return req.user;
+  }
 
-    if (!user) throw new HttpException('Invalid data', 401);
-
-    return user;
+  @Get('status')
+  @UseGuards(JwtAuthGuard)
+  status(@Req() req: Request) {
+    console.log(' AuthController status method');
+    console.log(req.user);
+    return req.user;
   }
 }
