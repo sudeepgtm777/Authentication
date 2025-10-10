@@ -31,12 +31,3 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-
-UserSchema.pre<UserDocument>('save', async function (next) {
-  const existingUser = await this.model('User').findOne({ email: this.email });
-  if (existingUser) {
-    const err = new Error('Email already exists!');
-    return next(err);
-  }
-  next();
-});
