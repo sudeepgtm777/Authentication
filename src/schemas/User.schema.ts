@@ -15,7 +15,7 @@ export class User {
   password: string;
 
   @Prop({ select: false })
-  passwordConfirm: string;
+  passwordConfirm?: string;
 
   @Prop()
   passwordChangedAt: Date;
@@ -31,3 +31,17 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.set('toJSON', {
+  transform: (doc, ret) => {
+    const { password, ...rest } = ret;
+    return rest;
+  },
+});
+
+UserSchema.set('toObject', {
+  transform: function (doc, ret) {
+    const { password, ...rest } = ret;
+    return ret;
+  },
+});
