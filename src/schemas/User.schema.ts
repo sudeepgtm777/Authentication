@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
+import { UserSettings } from './UserSetting.schema';
 
 export type UserDocument = User & Document;
 
@@ -28,6 +29,9 @@ export class User {
 
   @Prop({ default: true, select: false })
   active: boolean;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'UserSettings' })
+  settings?: UserSettings;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
