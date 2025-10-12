@@ -60,4 +60,8 @@ export class UsersService {
 
     return updatedUser;
   }
+
+  deleteUser(id: string) {
+    return this.userModel.findByIdAndDelete(id);
+  }
 }
