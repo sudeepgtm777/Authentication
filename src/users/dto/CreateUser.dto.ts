@@ -1,4 +1,19 @@
-import { IsEmail, IsNotEmpty, MinLength, Matches } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsEmail,
+  IsNotEmpty,
+  MinLength,
+  Matches,
+  IsOptional,
+  IsBoolean,
+  ValidateNested,
+} from 'class-validator';
+
+export class CreateUserSettingsDto {
+  @IsOptional()
+  @IsBoolean()
+  receiveNotificaton?: boolean;
+}
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -18,4 +33,9 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   passwordConfirm: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateUserSettingsDto)
+  settings?: CreateUserSettingsDto;
 }

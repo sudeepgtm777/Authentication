@@ -5,18 +5,24 @@ import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from 'src/schemas/User.schema';
 import { CreateUserDto } from './dto/CreateUser.dto';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
+import { UserSettings } from 'src/schemas/UserSetting.schema';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(UserSettings.name)
+    private userSettingsModel: Model<UserSettings>,
+  ) {}
 
-  async createUser(createUserDto: CreateUserDto) {
+  async createUser({ settings, ...createUserDto }: CreateUserDto) {
     const existingUser = await this.userModel.findOne({
       email: createUserDto.email,
     });
     if (existingUser) {
       throw new BadRequestException('Email already exists!');
     }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
 
@@ -25,6 +31,16 @@ export class UsersService {
       password: hashedPassword,
       passwordConfirm: undefined,
     });
+
+    if (settings) {
+      const newSettings = new this.userSettingsModel(settings);
+      const saveNewSettings = await newSettings.save();
+      const newUser = new this.userModel({
+        ...createUserDto,
+        settings: saveNewSettings._id,
+      });
+      return newUser.save();
+    }
 
     return user.save();
   }
@@ -38,7 +54,7 @@ export class UsersService {
   }
 
   getUsersById(id: string) {
-    return this.userModel.findById(id);
+    return this.userModel.findById(id).populate('settings');
   }
 
   async updateUser(id: string, updateUserDto: UpdateUserDto) {
