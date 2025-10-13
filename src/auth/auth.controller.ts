@@ -47,7 +47,8 @@ export class AuthController {
 
   @ApiOperation({
     summary: 'Profile',
-    description: 'User Profile.',
+    description:
+      'After login token is received. Use that token in the authorize 🔒 to get User Profile.',
   })
   @ApiBearerAuth()
   @ApiResponse({
