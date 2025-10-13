@@ -37,6 +37,8 @@ export class UsersService {
       const saveNewSettings = await newSettings.save();
       const newUser = new this.userModel({
         ...createUserDto,
+        password: hashedPassword,
+        passwordConfirm: undefined,
         settings: saveNewSettings._id,
       });
       return newUser.save();
