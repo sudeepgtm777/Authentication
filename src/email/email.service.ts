@@ -1,18 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 @Injectable()
 export class EmailService {
-  private transporter;
+  private resend: Resend;
 
   constructor() {
-    this.transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    // Initialize Resend with your API key (store in .env)
+    this.resend = new Resend(process.env.RESEND_API_KEY!);
   }
 
   private getBackendUrl(): string {
@@ -22,8 +17,8 @@ export class EmailService {
   async sendVerificationEmail(to: string, token: string) {
     const verificationUrl = `${this.getBackendUrl()}/auth/verify-email?token=${token}`;
 
-    await this.transporter.sendMail({
-      from: `"Your App" <${process.env.EMAIL_USER}>`,
+    await this.resend.emails.send({
+      from: process.env.RESEND_VERIFIED_SENDER!, // your verified sender email
       to,
       subject: 'Verify Your Email',
       html: `
@@ -38,8 +33,8 @@ export class EmailService {
   async sendResetPasswordEmail(to: string, token: string) {
     const resetUrl = `${this.getBackendUrl()}/auth/reset-password?token=${token}`;
 
-    await this.transporter.sendMail({
-      from: `"Your App" <${process.env.EMAIL_USER}>`,
+    await this.resend.emails.send({
+      from: process.env.RESEND_VERIFIED_SENDER!,
       to,
       subject: 'Reset Your Password',
       html: `
