@@ -32,6 +32,21 @@ export class User {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'UserSettings' })
   settings?: UserSettings;
+
+  @Prop({ default: false })
+  isVerified: boolean;
+
+  @Prop({ type: String, default: undefined })
+  verificationToken?: string;
+
+  @Prop({ type: Number, default: undefined })
+  verificationTokenExpiry?: number;
+
+  @Prop({ type: String, default: undefined })
+  resetPasswordToken?: string;
+
+  @Prop({ type: Number, default: undefined })
+  resetPasswordExpiry?: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
