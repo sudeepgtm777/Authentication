@@ -40,20 +40,51 @@ Swagger – API documentation
 
 ### Auth
 
-| Method | Route       | Description                           |
-| ------ | ----------- | ------------------------------------- |
-| POST   | /auth/login | Login and receive JWT token           |
-| GET    | /auth/me    | Get user profile (requires JWT token) |
+| Method | Route                     | Description                           |
+| ------ | ------------------------- | ------------------------------------- |
+| POST   | /auth/signup              | Create a new user                     |
+| GET    | /auth/verify-email?token= | Verify email using verification token |
+| POST   | /auth/login               | Login and receive JWT token           |
+| GET    | /auth/forgot-password     | Send password reset email to user     |
+| POST   | /auth/login               | Login and receive JWT token           |
+| PATCH  | /auth/reset-password      | Reset password using reset token      |
+
+#### Descriptions
+
+`/auth/signup`
+
+Creates a new user
+→ Generates email verification token
+→ Sends verification email
+→ User cannot login until verified (isVerified = false)
+
+`/auth/verify-email?token=`
+
+Verifies email and activates account
+→ Sets isVerified = true
+→ Deletes verification token
+
+`/auth/login`
+
+Returns JWT only after user email is verified.
+
+`/auth/forgot-password`
+
+Sends a password reset link to
+`/auth/reset-password?token=xxxx`
+
+`/auth/reset-password`
+
+Set a new password using the reset token.
 
 ### Users
 
-| Method | Route         | Description               |
-| ------ | ------------- | ------------------------- |
-| POST   | /users/signup | Create a new user         |
-| GET    | /users        | Get all users             |
-| GET    | /users/:id    | Get a specific user by ID |
-| PATCH  | /users/:id    | Update user information   |
-| DELETE | /users/:id    | Delete user by ID         |
+| Method | Route      | Description               |
+| ------ | ---------- | ------------------------- |
+| GET    | /users     | Get all users             |
+| GET    | /users/:id | Get a specific user by ID |
+| PATCH  | /users/:id | Update user information   |
+| DELETE | /users/:id | Delete user by ID         |
 
 ## Notes
 
