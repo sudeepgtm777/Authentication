@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -49,6 +53,18 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).select('+password').exec();
+  }
+
+  async findByVerificationToken(token: string): Promise<UserDocument> {
+    const user = await this.userModel.findOne({ verificationToken: token });
+    if (!user) throw new NotFoundException('User not found for this token');
+    return user;
+  }
+
+  async findByResetToken(token: string): Promise<UserDocument> {
+    const user = await this.userModel.findOne({ resetPasswordToken: token });
+    if (!user) throw new NotFoundException('User not found for this token');
+    return user;
   }
 
   getUsers() {
