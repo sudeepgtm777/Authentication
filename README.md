@@ -1,3 +1,5 @@
+Currently the email verification works with only the mail that is registerd in resend. I am working on it to get to resolve the issue with domain use.
+
 # Authentication API
 
 A NestJS authentication API featuring JWT-based login, user management, and Swagger documentation.
