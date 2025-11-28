@@ -36,6 +36,51 @@ bcrypt – Password hashing
 
 Swagger – API documentation
 
+## Setup
+
+1️⃣ Clone the Repository
+
+```
+git clone https://github.com/sudeepgtm777/Authentication.git
+```
+
+2️⃣ Install Dependencies
+Open termial
+
+```
+cd backend
+
+npm install
+```
+
+3️⃣ Environment Variables
+Create a .env file in authentication/config.env file with:
+
+```
+MONGO_URI=your_database
+JWT_KEY=the-secret-key
+RESEND_API_KEY=api_key
+RESEND_VERIFIED_SENDER=onboarding@resend.dev
+
+(For Production)
+BACKEND_URL=backend_deployed_url
+
+```
+
+4️⃣ Run the Server
+
+In backend terminal
+
+```
+npm run start:dev
+```
+
+Server will start on:
+http://localhost:3000
+
+Swagger docs (API documentation):
+http://localhost:3000/api
+
 ## API Endpoints
 
 ### Auth
