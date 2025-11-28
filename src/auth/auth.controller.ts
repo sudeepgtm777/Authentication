@@ -1,50 +1,84 @@
-import { Controller, Post, UseGuards, Req, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Req,
+  Get,
+  Query,
+  Body,
+  BadRequestException,
+  ValidationPipe,
+  UsePipes,
+} from '@nestjs/common';
 import { LocalGuard } from './guards/local.guard';
 import type { Request } from 'express';
 import { JwtAuthGuard } from './guards/jwt.guard';
+import { CreateUserDto } from 'src/users/dto/CreateUser.dto';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { AuthPayloadDto } from './dto/auth.dto';
+import {
+  AuthPayloadDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+} from './dto/auth.dto';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  // ------------------- SIGNUP -------------------
+
   @ApiOperation({
-    summary: 'Login',
-    description: 'Login to the app.',
+    summary: 'Signup',
+    description: 'Signup to create a User and send verification email.',
   })
+  @ApiBody({ type: CreateUserDto, description: 'Create User' })
+  @ApiResponse({
+    status: 201,
+    description: 'User created successfully. Verification email sent.',
+    example: {
+      message: 'User created. Please check your email to verify account.',
+    },
+  })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @Post('signup')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async signup(@Body() createUserDto: CreateUserDto) {
+    return this.authService.signup(createUserDto);
+  }
+
+  // ------------------- LOGIN -------------------
+  @ApiOperation({ summary: 'Login', description: 'Login to the app.' })
   @ApiBody({
     description: 'User login data',
     type: AuthPayloadDto,
     examples: {
       example1: {
         summary: 'Sample login payload',
-        value: {
-          email: 'sudeep@gmail.com',
-          password: 'abcde1234',
-        },
+        value: { email: 'sudeep@gmail.com', password: 'abcde1234' },
       },
     },
   })
   @ApiResponse({
     status: 201,
-    description: 'Logged in  successfully',
-    example: {
-      token: 'token_id_creation',
-    },
+    description: 'Logged in successfully',
+    example: { token: 'token_id_creation' },
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @Post('login')
   @UseGuards(LocalGuard)
   login(@Req() req: Request) {
-    // Return with token
     return req.user;
   }
 
+  // ------------------- PROFILE -------------------
   @ApiOperation({
     summary: 'Profile',
     description:
@@ -70,5 +104,42 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   status(@Req() req: Request) {
     return req.user;
+  }
+
+  // ------------------- EMAIL VERIFICATION -------------------
+  @ApiOperation({
+    summary: 'Verify Email',
+    description: 'Verify user email via token sent in email.',
+  })
+  @ApiResponse({ status: 200, description: 'Email successfully verified.' })
+  @ApiUnauthorizedResponse({ description: 'Invalid or expired token' })
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string) {
+    if (!token) throw new BadRequestException('Token is required');
+    return this.authService.verifyEmail(token);
+  }
+
+  // ------------------- FORGOT PASSWORD -------------------
+  @ApiOperation({
+    summary: 'Forgot Password',
+    description: 'Send password reset email.',
+  })
+  @ApiBody({ type: ForgotPasswordDto })
+  @ApiResponse({ status: 200, description: 'Password reset email sent.' })
+  @Post('forgot-password')
+  async forgotPassword(@Body() body: ForgotPasswordDto) {
+    return this.authService.forgotPassword(body.email);
+  }
+
+  // ------------------- RESET PASSWORD -------------------
+  @ApiOperation({
+    summary: 'Reset Password',
+    description: 'Reset password using token from email.',
+  })
+  @ApiBody({ type: ResetPasswordDto })
+  @ApiResponse({ status: 200, description: 'Password successfully reset.' })
+  @Post('reset-password')
+  async resetPassword(@Body() body: ResetPasswordDto) {
+    return this.authService.resetPassword(body.token, body.newPassword);
   }
 }
