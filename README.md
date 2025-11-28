@@ -40,14 +40,14 @@ Swagger – API documentation
 
 ### Auth
 
-| Method | Route                     | Description                           |
-| ------ | ------------------------- | ------------------------------------- |
-| POST   | /auth/signup              | Create a new user                     |
-| GET    | /auth/verify-email?token= | Verify email using verification token |
-| POST   | /auth/login               | Login and receive JWT token           |
-| GET    | /auth/forgot-password     | Send password reset email to user     |
-| POST   | /auth/login               | Login and receive JWT token           |
-| PATCH  | /auth/reset-password      | Reset password using reset token      |
+| Method | Route                     | Description                                   |
+| ------ | ------------------------- | --------------------------------------------- |
+| POST   | /auth/signup              | Create a new user                             |
+| GET    | /auth/verify-email?token= | Verify email using verification token         |
+| POST   | /auth/login               | Login and receive JWT token                   |
+| GET    | /auth/me                  | Get authenticated user profile (JWT required) |
+| POST   | /auth/forgot-password     | Send password reset email to user             |
+| PATCH  | /auth/reset-password      | Reset password using reset token              |
 
 #### Descriptions
 
@@ -67,6 +67,10 @@ Verifies email and activates account
 `/auth/login`
 
 Returns JWT only after user email is verified.
+
+`/auth/me`
+Returns the logged-in user's information
+→ Requires valid JWT in header
 
 `/auth/forgot-password`
 
@@ -90,6 +94,6 @@ Set a new password using the reset token.
 
 Password hashing: User passwords are stored securely using bcrypt.
 
-JWT Authentication: Use the token from /auth/login in the Authorization header with Bearer <token>.
+JWT Authentication: Use the token from `/auth/login` in the Authorization header with Bearer <token>.
 
 Validation: DTOs enforce required fields, optional fields, and custom validation messages.
