@@ -18,7 +18,7 @@ export class EmailService {
     const verificationUrl = `${this.getBackendUrl()}/auth/verify-email?token=${token}`;
 
     await this.resend.emails.send({
-      from: process.env.RESEND_VERIFIED_SENDER!, // your verified sender email
+      from: process.env.RESEND_VERIFIED_SENDER!,
       to,
       subject: 'Verify Your Email',
       html: `
