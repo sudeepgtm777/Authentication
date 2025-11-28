@@ -25,38 +25,6 @@ import {
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
-  @ApiOperation({
-    summary: 'Signup',
-    description: 'Signup to create a User.',
-  })
-  @ApiBody({
-    type: CreateUserDto,
-    description: 'Create User',
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'User created successfully',
-    example: {
-      name: 'Sudeep Gautam',
-      email: 'sudeep@gmail.com',
-      active: true,
-      settings: '68ebd0c16be82eba3f1a9abc',
-      _id: '68ebd0c16be82eba3f1a9abe',
-      createdAt: '2025-10-12T16:01:05.099Z',
-      updatedAt: '2025-10-12T16:01:05.099Z',
-      __v: 0,
-    },
-  })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @Post('signup')
-  @UsePipes(new ValidationPipe())
-  async createUser(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.createUser(createUserDto);
-    return {
-      message: 'User created successfully',
-      user,
-    };
-  }
 
   @ApiOperation({
     summary: 'Get all the users',
